@@ -1,0 +1,16 @@
+{
+    "name": "apexmine/libpersiantext",
+    "description": "Persian (Farsi) text shaping and right-to-left fix for Minecraft Bedrock / PocketMine-MP",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["pocketmine", "virion", "persian", "farsi", "rtl", "minecraft"],
+    "require": {
+        "php": ">=8.1",
+        "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ApexMine\\libPersianText\\": "src/ApexMine/libPersianText/"
+        }
+    }
+}

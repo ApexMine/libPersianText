@@ -103,8 +103,9 @@ Each new line keeps the active color, and text inside `()`, `[]`, `{}` or a run 
   for example) takes the color of whatever is drawn before it. Start lines with a color and use `§f` where you
   want plain white.
 - **Use the half-space (ZWNJ)** in words like می‌شود. It separates the letters correctly and isn't drawn in game.
-- **Use Persian ی and ک, not Arabic ي and ك**, and English digits. Write the word «درصد» instead of `٪`, which
-  some fonts don't have.
+- **Arabic letters work too** (أ إ ؤ ئ ة ي ك ى ۀ, and لأ لإ لآ). Marks above or below letters (tanween as in
+  «قبلاً», fatha, kasra, shadda...) can't be drawn in Minecraft, so they are removed; «هٔ» becomes «ۀ».
+- **Use English digits**, and write the word «درصد» instead of `٪`, which some fonts don't have.
 - **If Persian shows as boxes only inside `ModalForm`s,** your resource pack probably doesn't style modal forms.
   Use a `SimpleForm` with two buttons for confirmations instead.
 
@@ -204,8 +205,9 @@ $form->setContent(Persian::fix($longText, 40)); // حدود 40 برای فرم �
 - **به هر بخش رنگ خودش را بدهید.** بخشی که کد رنگ ندارد (مثلا عددی بعد از یک `[تگ]` رنگی) رنگ بخش قبلی را می‌گیرد.
   خط‌ها را با رنگ شروع کنید و هرجا سفید ساده می‌خواهید `§f` بگذارید.
 - **از نیم‌فاصله استفاده کنید** (می‌شود، درخواست‌ها). حروف را درست جدا می‌کند و در بازی دیده نمی‌شود.
-- **از ی و ک فارسی استفاده کنید، نه ي و ك عربی،** و عدد انگلیسی بنویسید. به‌جای `٪` کلمه «درصد» بنویسید، چون بعضی
-  فونت‌ها آن را ندارند.
+- **حروف عربی هم پشتیبانی می‌شوند** (أ إ ؤ ئ ة ي ك ى ۀ و لأ لإ لآ). اعراب‌ها (تنوین مثل «قبلاً»، فتحه، کسره، تشدید...)
+  در ماینکرفت قابل نمایش نیستند و حذف می‌شوند؛ «هٔ» به «ۀ» تبدیل می‌شود.
+- **عدد انگلیسی بنویسید** و به‌جای `٪` کلمه «درصد» بنویسید، چون بعضی فونت‌ها آن را ندارند.
 - **اگر فارسی فقط داخل `ModalForm` به شکل مربع نمایش داده می‌شود،** احتمالا ریسورس‌پک شما روی فرم مودال اعمال
   نمی‌شود. برای تایید از `SimpleForm` با دو دکمه استفاده کنید.
 

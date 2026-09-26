@@ -20,9 +20,30 @@ final class PersianTextEngine{
         "م" => ["ﻡ", "ﻣ", "ﻤ", "ﻢ"], "ن" => ["ﻥ", "ﻧ", "ﻨ", "ﻦ"], "و" => ["ﻭ", "ﻭ", "ﻮ", "ﻮ"],
         "ه" => ["ﻩ", "ﻫ", "ﻬ", "ﻪ"], "ی" => ["ﯼ", "ﯾ", "ﯿ", "ﯽ"],
         "ئ" => ["ﺉ", "ﺋ", "ﺌ", "ﺊ"], "ء" => ["ﺀ", "ﺀ", "ﺀ", "ﺀ"],
+
+        // Arabic letters (and Persian ones written with hamza), as [isolated, initial, medial, final]
+        "أ" => ["\u{FE83}", "\u{FE83}", "\u{FE84}", "\u{FE84}"], "إ" => ["\u{FE87}", "\u{FE87}", "\u{FE88}", "\u{FE88}"],
+        "ٱ" => ["\u{FB50}", "\u{FB50}", "\u{FB51}", "\u{FB51}"], "ؤ" => ["\u{FE85}", "\u{FE85}", "\u{FE86}", "\u{FE86}"],
+        "ة" => ["\u{FE93}", "\u{FE93}", "\u{FE94}", "\u{FE94}"], "ۀ" => ["\u{FBA4}", "\u{FBA4}", "\u{FBA5}", "\u{FBA5}"],
+        "ى" => ["\u{FEEF}", "\u{FEEF}", "\u{FEF0}", "\u{FEF0}"],
+        "ي" => ["\u{FEF1}", "\u{FEF3}", "\u{FEF4}", "\u{FEF2}"], "ك" => ["\u{FED9}", "\u{FEDB}", "\u{FEDC}", "\u{FEDA}"],
+        "ـ" => ["ـ", "ـ", "ـ", "ـ"],
     ];
 
-    private static array $nonConnectors = ["ا" => 1, "آ" => 1, "د" => 1, "ذ" => 1, "ر" => 1, "ز" => 1, "ژ" => 1, "و" => 1];
+    /** Letters that join to the letter before them but never to the one after them. */
+    private static array $nonConnectors = [
+        "ا" => 1, "آ" => 1, "د" => 1, "ذ" => 1, "ر" => 1, "ز" => 1, "ژ" => 1, "و" => 1,
+        "أ" => 1, "إ" => 1, "ٱ" => 1, "ؤ" => 1, "ة" => 1, "ۀ" => 1, "ى" => 1,
+    ];
+
+    /** Letters that don't join on either side. */
+    private static array $nonJoining = ["ء" => 1];
+
+    /** لا and its hamza / madda variants, as [isolated, final]. */
+    private static array $lamAlef = [
+        "ا" => ["\u{FEFB}", "\u{FEFC}"], "آ" => ["\u{FEF5}", "\u{FEF6}"],
+        "أ" => ["\u{FEF7}", "\u{FEF8}"], "إ" => ["\u{FEF9}", "\u{FEFA}"],
+    ];
 
     public static function process(string $text): string{
         return self::reversePersianText(self::correctPersianText($text));
@@ -200,8 +221,9 @@ final class PersianTextEngine{
     public static function correctPersianText(string $text): string{
         $glyphs = self::$glyphs;
         $nonConnectors = self::$nonConnectors;
+        $nonJoining = self::$nonJoining;
 
-        $chars = self::splitUnits($text);
+        $chars = self::splitUnits(self::removeDiacritics($text));
         $count = count($chars);
         $result = [];
 
@@ -215,12 +237,12 @@ final class PersianTextEngine{
             $prev = $i > 0 ? $chars[$i - 1] : null;
             $next = $i < $count - 1 ? $chars[$i + 1] : null;
 
-            if ($curr === "ل" && $next === "ا") {
+            if ($curr === "ل" && $next !== null && isset(self::$lamAlef[$next])) {
                 $hasPrev = $prev !== null;
                 $prevGlyph = $hasPrev && isset($glyphs[$prev]);
-                $connectsBefore = $prevGlyph && !isset($nonConnectors[$prev]);
+                $connectsBefore = $prevGlyph && !isset($nonConnectors[$prev]) && !isset($nonJoining[$prev]);
 
-                $result[] = $connectsBefore ? "ﻼ" : "ﻻ";
+                $result[] = self::$lamAlef[$next][$connectsBefore ? 1 : 0];
                 $skipNext = true;
                 continue;
             }
@@ -235,8 +257,8 @@ final class PersianTextEngine{
             $prevGlyph = $hasPrev && isset($glyphs[$prev]);
             $nextGlyph = $hasNext && isset($glyphs[$next]);
 
-            $connectsBefore = $prevGlyph && !isset($nonConnectors[$prev]);
-            $connectsAfter = !isset($nonConnectors[$curr]) && $nextGlyph;
+            $connectsBefore = $prevGlyph && !isset($nonConnectors[$prev]) && !isset($nonJoining[$prev]) && !isset($nonJoining[$curr]);
+            $connectsAfter = !isset($nonConnectors[$curr]) && !isset($nonJoining[$curr]) && $nextGlyph && !isset($nonJoining[$next]);
 
             if ($connectsBefore) {
                 $form = $connectsAfter ? 2 : 3;
@@ -250,6 +272,15 @@ final class PersianTextEngine{
         }
 
         return implode("", $result);
+    }
+
+    /**
+     * Minecraft can't draw marks above or below letters (tanween as in «قبلاً», fatha, kasra, shadda...), so they
+     * showed up as boxes and broke the joining of the letters around them. Hamza above heh / yeh becomes ۀ / ئ.
+     */
+    private static function removeDiacritics(string $text): string{
+        $text = str_replace(["ه\u{0654}", "ی\u{0654}", "ي\u{0654}"], ["ۀ", "ئ", "ئ"], $text);
+        return (string) preg_replace("/[\x{064B}-\x{065F}\x{0670}]/u", "", $text);
     }
 
     /**

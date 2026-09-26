@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApexMine\libPersianText;
+namespace ApexGaming\libPersianText;
 
 final class PersianTextEngine{
 

@@ -4,13 +4,16 @@
     "type": "library",
     "license": "MIT",
     "keywords": ["pocketmine", "virion", "persian", "farsi", "rtl", "minecraft"],
+    "authors": [
+        { "name": "Kevin" }
+    ],
     "require": {
         "php": ">=8.1",
         "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
-            "ApexMine\\libPersianText\\": "src/ApexMine/libPersianText/"
+            "ApexGaming\\libPersianText\\": "src/ApexGaming/libPersianText/"
         }
     }
 }

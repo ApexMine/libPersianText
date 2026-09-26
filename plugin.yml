@@ -1,0 +1,9 @@
+name: libPersianText
+main: ApexGaming\libPersianText\Loader
+version: 1.0.0
+api: [5.0.0]
+author: Kevin
+description: Persian (Farsi) text shaping and right-to-left fix, shared by other plugins
+website: https://github.com/ApexMine/libPersianText
+# Loaded before the worlds so any plugin, STARTUP ones included, can depend on it.
+load: STARTUP

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApexMine\libPersianText;
+namespace ApexGaming\libPersianText;
 
 /**
  * Makes Persian (Farsi) text display correctly in Minecraft Bedrock, which has
